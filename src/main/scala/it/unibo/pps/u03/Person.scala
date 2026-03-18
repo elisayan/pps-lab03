@@ -22,9 +22,10 @@ def isStudent(p: Person): Boolean = p match
 def getCourses(p: Sequence[Person]): Sequence[String] =
   map(filter(p) {
     case Teacher(_, _) => true
-    case _ => true
+    case _ => false
   }) {
     case Teacher(_, course) => course
+    case _ => ""
   }
 
 
@@ -58,4 +59,4 @@ def totalCourses(p: Sequence[Person]): Int =
       Cons(Teacher("Aguzzi", "PPS"),
         Cons(Teacher("Ricci", "PCD"),
           Nil())))
-  println(totalCourses(l1))
+  println(totalCourses(l1)) // 2
