@@ -39,6 +39,7 @@ def totalCourses(p: Sequence[Person]): Int =
     case _ => false
   }) {
     case Teacher(_, course) => course
+    case _ => ""
   }))(0) {
     (acc, _) => acc + 1
   }
