@@ -1,6 +1,6 @@
 package u03
 
-object Streams extends App :
+object Streams extends App:
 
   import Sequences.*
 
@@ -37,10 +37,18 @@ object Streams extends App :
     def iterate[A](init: => A)(next: A => A): Stream[A] =
       cons(init, iterate(next(init))(next))
 
+    def takeWhile[A](s: Stream[A])(p: A => Boolean): Stream[A] = s match
+      case Cons(h, t) if p(h()) => cons(h(), takeWhile(t())(p))
+      case _ => Empty()
+
+    def fill[A](n: Int)(e: A): Stream[A] = n match
+      case i if i > 0 => cons(e, fill(i - 1)(e))
+      case _ => empty()
+
   end Stream
 
 @main def tryStreams =
-  import Streams.* 
+  import Streams.*
 
   val str1 = Stream.iterate(0)(_ + 1) // {0,1,2,3,..}
   val str2 = Stream.map(str1)(_ + 1) // {1,2,3,4,..}
@@ -50,3 +58,11 @@ object Streams extends App :
 
   lazy val corec: Stream[Int] = Stream.cons(1, corec) // {1,1,1,..}
   println(Stream.toList(Stream.take(corec)(10))) // [1,1,..,1]
+
+  val stream = Stream.iterate(0)(_ + 1)
+  println(Stream.toList(Stream.takeWhile(stream)(_ < 5))) // Cons (0, Cons (1, Cons (2, Cons (3, Cons (4, Nil ())))))
+
+  println(Stream.toList(Stream.fill(3)("a"))) // Cons (a, Cons (a, Cons (a, Nil ())))
+
+  val fibonacci: Stream[Int] = Stream.map(Stream.iterate((0, 1))((a, b) => (b, a + b)))(_._1)
+  println(Stream.toList(Stream.take(fibonacci)(5))) // Cons (0, Cons (1, Cons (1, Cons (2, Cons (3, Nil ()))))
